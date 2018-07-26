@@ -1,0 +1,33 @@
+package com.infodart.peerhuntr.spring.controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.infodart.peerhuntr.dto.peerRating.UserRatingDTO;
+import com.infodart.peerhuntr.dto.response.ResponseDTO;
+import com.infodart.peerhuntr.jpa.service.Impl.RatingService;
+
+@Controller
+public class RatingController {
+	
+	@Autowired
+	   RatingService ratingService;
+	
+	
+	 @RequestMapping(value="/submitRating",method = RequestMethod.POST)
+		public @ResponseBody ResponseDTO submitTest(@RequestBody UserRatingDTO userRatingDTO,BindingResult bindingResult,
+				Model model) {
+
+			 ResponseDTO response= null;		
+			response=ratingService.submitRating(userRatingDTO);
+			
+			 return response;
+
+		}	
+}
