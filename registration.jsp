@@ -79,8 +79,13 @@
   										  Not valid email!
   									</span>
   									
-                                    <input required type="password" ng-model="user.userLogin.loginPassword"  name="loginPassword" id="password" onBlur="validate()" placeholder="Password" class="border-radius-4 input-bg medium-input" >
-                                     <span toggle="#password" class="fa fa-fw fa-eye field-icon toggle-password"></span>
+                                    <input required type="password" ng-model="user.userLogin.loginPassword"  name="loginPassword" id="password" onBlur="validate()" placeholder="Password" class="form-control"  >
+                                    <span toggle="#password" class="fa fa-fw fa-eye field-icon toggle-password"></span>
+                                    
+                                     <!-- <input type="password" name="password" id="password" class="form-control" placeholder="Password" > -->
+                                    
+                                     
+                                    <!--  <span toggle="#password" class="fa fa-fw fa-eye field-icon toggle-password"></span> -->
                                    <span style='color:red'  class="help-inline" ng-show="submitted && registerCustomerForm.loginPassword.$error.required">Password is Required</span><br/>
                                    <span id="message" style='color:red'></span>
                                    
@@ -137,11 +142,16 @@
   										  Please enter only characters
   									</span>
   									
-                                       <input required type="text" ng-pattern="/^[a-zA-Z ]*$/" ng-model="user.universitySchool"  name="universitySchool" id="subject" placeholder="Institute" class="border-radius-4 input-bg medium-input">
+                                       <input required  maxlength="16" type="text" ng-pattern="/^[a-zA-Z ]*$/" ng-model="user.universitySchool"  name="universitySchool" id="subject" placeholder="Institute" class="border-radius-4 input-bg medium-input">
                                     <span style='color:red' class="help-inline" ng-show="submitted && registerCustomerForm.universitySchool.$error.required">University/School is Required</span><br/>
-                                    <span style='color:red' class="help-inline" ng-show="submitted && registerCustomerForm.universitySchool.$error.pattern">
-  										  Please enter only characters
-  									</span>
+         <!--                           <input name="limitedtextfield" type="text" onKeyDown="limitText(this.form.limitedtextfield,this.form.countdown,15);" 
+onKeyUp="limitText(this.form.limitedtextfield,this.form.countdown,15);" maxlength="15"><br>
+<font size="1">(Maximum characters: 15)<br>
+
+                       You have <input readonly type="text" name="countdown" size="3" value="15"> characters left.</font> -->
+                        <span style='color:red' class="help-inline" ng-show="submitted && registerCustomerForm.universitySchool.$error.pattern">
+  						Please enter only characters
+  						</span>
   									
                                      <input required type="password"   name="confirmPassword" id="confirmPassword" placeholder="Confirm Password" class="border-radius-4 input-bg medium-input" >
                                      <span toggle="#confirmPassword" class="fa fa-fw fa-eye field-icon toggle-password"></span>
