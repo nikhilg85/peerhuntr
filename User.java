@@ -496,4 +496,9 @@ public class User implements Serializable  {
 		return userAvgRating;
 	}
 
+	public String getId() {
+		// TODO Auto-generated method stub
+		return getId();
+	}
+
 }

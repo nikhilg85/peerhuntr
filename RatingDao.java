@@ -1,0 +1,22 @@
+package com.infodart.peerhuntr.jpa.dao;
+
+import java.util.List;
+
+
+import com.infodart.peerhuntr.jpa.entity.peerRating.RatingType;
+import com.infodart.peerhuntr.jpa.entity.peerRating.UserAvgRating;
+import com.infodart.peerhuntr.jpa.entity.peerRating.UserRating;
+import com.infodart.peerhuntr.jpa.entity.user.User;
+
+public interface RatingDao {
+
+	public List<User> getUserIdByReferralCode(String referralCode);
+	public int getNetworkId(String network);
+	public List<RatingType> getAllRatingTypes();
+	public String saveRating(UserRating userRating);
+	public boolean updateRating(UserRating userRating);
+	public List<UserAvgRating> calculateRatingAverage(int userId);
+	public boolean saveAverageRating(UserAvgRating userAvgRating);
+	public boolean updateAverageRating(UserAvgRating userAvgRating,int userId);
+	public List<UserAvgRating> getUserRatingAverage(int userId); 
+}

@@ -1,61 +1,74 @@
-package com.infodart.peerhuntr.jpa.entity.user;
+package com.infodart.peerhuntr.dto.user;
 
-import java.io.Serializable;
-import javax.persistence.*;
 import java.util.Date;
 import java.util.Set;
 
-
 /**
- * The persistent class for the user_login database table.
+ * DTO for the user_login database table.
  * 
  */
-@Entity
-@Table(name="user_login")
-@NamedQuery(name="UserLogin.findAll", query="SELECT u FROM UserLogin u")
-public class UserLogin implements Serializable {
-	private static final long serialVersionUID = 1L;
 
-	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	@Column(name="user_login_id")
+public class UserLoginDTO  {
+	
+
 	private int userLoginId;
-
-	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name="created_on")
 	private Date createdOn;
-
-	@Column(name="login_attempts")
 	private byte loginAttempts;
-
-	@Column(name="login_id")
 	private String loginId;
-
-	@Column(name="login_password")
 	private String loginPassword;
-
-	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name="modified_on")
 	private Date modifiedOn;
-
 	private String remarks;
-
 	private byte status;
+	private Set<UserDTO> users;
+	private Set<UserArchiveDTO> userArchives;
+	private AuthorityMasterDTO authorityMaster;
+	private String confirmPassword;
+	private String newPassword;
+	private int userId;
+	private String oldPassword;
+	private String referralCode;
 
-	/*//bi-directional many-to-one association to User
-	@OneToMany(mappedBy="userLogin")
-	private Set<User> users;
+	public String getReferralCode() {
+		return referralCode;
+	}
 
-	//bi-directional many-to-one association to UserArchive
-	@OneToMany(mappedBy="userLogin")
-	private Set<UserArchive> userArchives;*/
+	public void setReferralCode(String referralCode) {
+		this.referralCode = referralCode;
+	}
 
-	//bi-directional many-to-one association to AuthorityMaster
-	@ManyToOne
-	@JoinColumn(name="authority_id",insertable=true, updatable=true)
-	private AuthorityMaster authorityMaster;
+	public String getOldPassword() {
+		return oldPassword;
+	}
 
-	public UserLogin() {
+	public void setOldPassword(String oldPassword) {
+		this.oldPassword = oldPassword;
+	}
+
+	public int getUserId() {
+		return userId;
+	}
+
+	public void setUserId(int userId) {
+		this.userId = userId;
+	}
+
+	public String getConfirmPassword() {
+		return confirmPassword;
+	}
+
+	public void setConfirmPassword(String confirmPassword) {
+		this.confirmPassword = confirmPassword;
+	}
+
+	public String getNewPassword() {
+		return newPassword;
+	}
+
+	public void setNewPassword(String newPassword) {
+		this.newPassword = newPassword;
+	}
+
+	public UserLoginDTO() {
 	}
 
 	public int getUserLoginId() {
@@ -122,55 +135,55 @@ public class UserLogin implements Serializable {
 		this.status = status;
 	}
 
-	/*public Set<User> getUsers() {
+	public Set<UserDTO> getUsers() {
 		return this.users;
 	}
 
-	public void setUsers(Set<User> users) {
+	public void setUsers(Set<UserDTO> users) {
 		this.users = users;
 	}
 
-	public User addUser(User user) {
+	public UserDTO addUser(UserDTO user) {
 		getUsers().add(user);
 		user.setUserLogin(this);
 
 		return user;
 	}
 
-	public User removeUser(User user) {
+	public UserDTO removeUser(UserDTO user) {
 		getUsers().remove(user);
 		user.setUserLogin(null);
 
 		return user;
 	}
 
-	public Set<UserArchive> getUserArchives() {
+	public Set<UserArchiveDTO> getUserArchives() {
 		return this.userArchives;
 	}
 
-	public void setUserArchives(Set<UserArchive> userArchives) {
+	public void setUserArchives(Set<UserArchiveDTO> userArchives) {
 		this.userArchives = userArchives;
 	}
 
-	public UserArchive addUserArchive(UserArchive userArchive) {
+	public UserArchiveDTO addUserArchive(UserArchiveDTO userArchive) {
 		getUserArchives().add(userArchive);
 		userArchive.setUserLogin(this);
 
 		return userArchive;
 	}
 
-	public UserArchive removeUserArchive(UserArchive userArchive) {
+	public UserArchiveDTO removeUserArchive(UserArchiveDTO userArchive) {
 		getUserArchives().remove(userArchive);
 		userArchive.setUserLogin(null);
 
 		return userArchive;
 	}
-*/
-	public AuthorityMaster getAuthorityMaster() {
+
+	public AuthorityMasterDTO getAuthorityMaster() {
 		return this.authorityMaster;
 	}
 
-	public void setAuthorityMaster(AuthorityMaster authorityMaster) {
+	public void setAuthorityMaster(AuthorityMasterDTO authorityMaster) {
 		this.authorityMaster = authorityMaster;
 	}
 

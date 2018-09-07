@@ -40,44 +40,22 @@ public class RatingServiceImpl implements RatingService{
 		ResponseDTO responseDTO=new ResponseDTO();
 		try {
 			UserRating userRating;
-			List<User> user=ratingDao.getUserIdByReferralCode(userRatingDTO.getReferralCode());
+			List<User> users=ratingDao.getUserIdByReferralCode(userRatingDTO.getReferralCode());
+			User user = users.get(0);	
+			String email =user.getUserLogin().getLoginId();
 			
-			/*setUser(String User) {
-			this.User = User; // store the name
-		      }*/
-			User user1 = user.get(0);
-			
-			
-			String email =user1.getUserLogin().getLoginId();
-			
-			
-			
-			
+			if(!email.equals(userRatingDTO.getEmailId())) {
 			int networkId=ratingDao.getNetworkId(userRatingDTO.getNetwork());
 			List<RatingType> ratings=ratingDao.getAllRatingTypes();
 			
-			Pattern address=Pattern.compile("([\\w\\.]+)@([\\w\\.]+\\.\\w+)");
-		    Matcher match1=address.matcher(email1);
-		    Matcher match2=address.matcher(email2);
-		    if(!match1.find() || !match2.find()) return false; //Not an e-mail address? Already false
-		    if(!match1.group(2).equalsIgnoreCase(match2.group(2))) return false; //Not same serve? Already false
-		    switch(match1.group(2).toLowerCase()) {
-		    case "gmail.com":
-		        String gmail1=match1.group(1).replace(".", "");
-		        String gmail2=match2.group(1).replace(".", "");
-		        return gmail1.equalsIgnoreCase(gmail2);
-		    default: return match1.group(1).equalsIgnoreCase(match2.group(1));
-		    }
-		
-			
 	        for (Map.Entry<String,Integer> entry : userRatingDTO.getRatings().entrySet()) {
 	        	userRating=new UserRating();
-				User user=new User();
+				User userD=new User();
 				RatingType ratingType =new RatingType();
 				SocialNetworkMaster social=new SocialNetworkMaster();
 	        	
 				
-				user.setUserId(userId);
+				userD.setUserId(user.getUserId());
 				social.setSocialNetworkId(networkId);
 				
 	        	// Fetch rating type id
@@ -120,20 +98,22 @@ public class RatingServiceImpl implements RatingService{
 					 return responseDTO;
 				 }
 				
-				 else if(ReferralCode == UserId){  
-				        (exits.eqalsIgnoreCase("false"))  
-				    }
-
-   }else{  
-				        System.out.println("Invalid!");  
-				    }  
-	
+				
+				
+				
 	        }
-	        saveUserAvgRating(userId);
+	        saveUserAvgRating(user.getUserId());
 	        responseDTO.setStatus(Constants.SUCCESS_STATUS);
 	        responseDTO.setStatusCode(Constants.SUCCESS_STATUS_CODE);
 	        responseDTO.setMessage("Rating completed successfully");
-			
+		}else {
+			responseDTO.setStatus(Constants.FAILURE_STATUS);
+			responseDTO.setStatusCode(Constants.FAILURE_STATUS_CODE);
+			/*responseDTO.setErrorMsg("OK !");*/
+			responseDTO.setErrorMsg("You cannot rate yourself !");
+
+			 return responseDTO;
+		}
 			
 		}catch(org.hibernate.exception.ConstraintViolationException ce) {
 			ce.printStackTrace();

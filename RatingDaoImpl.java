@@ -1,0 +1,205 @@
+package com.infodart.peerhuntr.jpa.dao.impl;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import javax.persistence.Column;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
+import org.hibernate.SQLQuery;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+import org.hibernate.exception.ConstraintViolationException;
+import org.hibernate.query.Query;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
+import com.infodart.peerhuntr.jpa.dao.RatingDao;
+import com.infodart.peerhuntr.jpa.dao.impl.basedao.AbstractGenericDao;
+import com.infodart.peerhuntr.jpa.entity.peerRating.RatingType;
+import com.infodart.peerhuntr.jpa.entity.peerRating.SocialNetworkMaster;
+import com.infodart.peerhuntr.jpa.entity.peerRating.UserAvgRating;
+import com.infodart.peerhuntr.jpa.entity.peerRating.UserRating;
+import com.infodart.peerhuntr.jpa.entity.user.DegreeMaster;
+import com.infodart.peerhuntr.jpa.entity.user.User;
+
+@Repository
+public class RatingDaoImpl  implements RatingDao{
+	
+	@Autowired
+	private SessionFactory sessionFactory;
+	
+	@Override
+	public List<User> getUserIdByReferralCode(String referralCode) {
+		
+
+		 List<User> user = sessionFactory.getCurrentSession() .createQuery("from User where referralCode=?")
+					.setParameter(0, referralCode).list();
+			return user;
+	  
+	}
+
+	@Override
+	public int getNetworkId(String network) {
+		
+		 List<SocialNetworkMaster> test = sessionFactory.getCurrentSession() .createQuery("from SocialNetworkMaster where socialNetworkName=?")
+					.setParameter(0, network).list();
+			return test.get(0).getSocialNetworkId();
+	}
+
+	@Override
+	public List<RatingType> getAllRatingTypes() {
+		Session session=sessionFactory.getCurrentSession();
+		Query query = session.getNamedQuery("RatingType.findAll");
+		List<RatingType> ratings=query.list();
+		return ratings;
+	}
+
+	@Override
+	public String saveRating(UserRating userRating) {
+		String exists="false";
+		Session session=null;
+		try {
+		//persist example - with transaction
+		 session = sessionFactory.openSession();
+		Transaction tx = session.beginTransaction();
+		session.save(userRating);
+		tx.commit();
+		session.close();
+		}catch(Exception e) {
+			String message=e.getMessage();
+			if(message.contains("ConstraintViolationException"))
+				exists="true";
+		}
+		return exists;
+		
+	}
+	
+
+	@Override
+	public boolean updateRating(UserRating userRating) {
+		Session session =null;
+		try {
+			 session = sessionFactory.openSession();
+			Transaction tx=session.beginTransaction();
+			 Query query= session.createQuery("update UserRating set userRatingValue=? "
+			 		+ " where user.userId=? and ratingType.ratingTypeId=? and socialNetworkMaster.socialNetworkId=? and emailId=?")
+				.setParameter(0,userRating.getUserRatingValue())
+				.setParameter(1, userRating.getUser().getUserId())
+				.setParameter(2,userRating.getRatingType().getRatingTypeId())
+				.setParameter(3, userRating.getSocialNetworkMaster().getSocialNetworkId())
+				.setParameter(4,userRating.getEmailId());
+			 
+			  query.executeUpdate();
+			  tx.commit();
+			
+			 return true;
+			 
+
+		}catch(Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+		
+	finally {
+		 session.close();
+	}
+	
+		
+	}
+
+	@Override
+	public List<UserAvgRating> calculateRatingAverage(int userId) {
+		List<UserAvgRating> userAvgRatingList=new ArrayList<UserAvgRating>();
+		User user;
+		UserAvgRating userAvgRating; 
+		RatingType ratingType;
+		Session session = sessionFactory.openSession();
+			@SuppressWarnings("deprecation")
+			SQLQuery query = session.createSQLQuery("SELECT count(*) as no_of_review,sum(rating_value) as total,"
+					+ " sum(rating_value)/count(*) as avg,"
+					+ "rating_type_id FROM user_rating where user_id="+userId +
+					" and rating_type_id!=9 "
+					+ " group by rating_type_id "
+					+ " order by network_user,rating_type_id");
+			
+			List<Object[]> rows = query.list();
+			for(Object[] row : rows){
+				userAvgRating=new UserAvgRating();
+				ratingType=new RatingType();
+				user=new User();
+				
+				user.setUserId(userId);
+				ratingType.setRatingTypeId(Integer.parseInt(row[3].toString()));
+				userAvgRating.setRatingType(ratingType);
+				userAvgRating.setTotalReviews(Integer.parseInt(row[0].toString()));
+				userAvgRating.setAvgRatingValue(Double.parseDouble(row[2].toString()));
+				userAvgRating.setUser(user);
+				userAvgRatingList.add(userAvgRating);
+			}
+			session.close();
+			return userAvgRatingList;
+	}
+
+	@Override
+	public boolean saveAverageRating(UserAvgRating userAvgRating) {
+		try {
+		Session session = sessionFactory.openSession();
+		Transaction tx = session.beginTransaction();
+		session.save(userAvgRating);
+		tx.commit();
+		session.close();
+		return true;
+		 
+
+		}catch(Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+		
+	
+		
+	}
+
+	@Override
+	public boolean updateAverageRating(UserAvgRating userAvgRatingDTO,int userId) {
+		try {
+			Session session = sessionFactory.openSession();
+			Transaction tx=session.beginTransaction();
+			 Query query= session.createQuery("update UserAvgRating set avgRatingValue=?,totalReviews=?"
+			 		+ " where user.userId=? and ratingType.ratingTypeId=?")
+				.setParameter(0,userAvgRatingDTO.getAvgRatingValue())
+				.setParameter(1, userAvgRatingDTO.getTotalReviews())
+				.setParameter(2,userId)
+				.setParameter(3, userAvgRatingDTO.getRatingType().getRatingTypeId());
+			  query.executeUpdate();
+			  tx.commit();
+			 session.close();
+			 return true;
+			 
+
+		}catch(Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+		
+	}
+
+	@Override
+	public List<UserAvgRating> getUserRatingAverage(int userId) {
+
+		Session session = sessionFactory.openSession();
+		List<UserAvgRating> avg=session.createQuery("from UserAvgRating where user.userId=?")
+		.setParameter(0, userId).list();
+		session.close();
+		
+		return avg;
+	}
+
+}
